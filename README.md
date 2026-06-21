@@ -166,5 +166,8 @@ Users must configure their own Gmail and Google Drive integrations before execut
 ---
 
 ## Author
+Riddhi Basu
+
+Digital Process Coordinator | AI & Workflow Automation Enthusiast
 
 Built as part of an automation and AI workflow engineering portfolio focused on business process automation, document management, and AI-assisted operations.
