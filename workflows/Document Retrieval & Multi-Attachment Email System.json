@@ -1,0 +1,267 @@
+{
+  "name": "Document Retrieval & Multi-Attachment Email System",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message_id"
+            },
+            {
+              "name": "body"
+            },
+            {
+              "name": "attachment_filenames"
+            },
+            {
+              "name": "subject"
+            },
+            {
+              "name": "to"
+            }
+          ]
+        }
+      },
+      "id": "169dda93-ce1a-475d-a61e-fa9cf232d8c7",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json.fileName }}",
+        "limit": 1,
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        400,
+        0
+      ],
+      "id": "ff683138-0a8e-4d4d-8ecb-db4dbde79086",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "HWKDMnekN2NCGTGI",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        592,
+        0
+      ],
+      "id": "b74ddad3-4f5f-4899-a68f-bac3d9477a3d",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "HWKDMnekN2NCGTGI",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.attachment_filenames || '';\n\nconst files = raw\n  .split('|')\n  .map(name => name.trim())\n  .filter(name => name.length > 0);\n\nreturn files.map(fileName => ({\n  json: {\n    fileName,\n    message_id: $json.message_id,\n    body: $json.body,\n    subject: $json.subject,\n    to: $json.to\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        0
+      ],
+      "id": "e82c1f60-ba7a-48db-b3ae-708b859020ea",
+      "name": "Split Attachment Names"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItems = $input.all();\nconst original = $('When Executed by Another Workflow').first().json;\n\nconst output = {\n  json: {\n    message_id: original.message_id,\n    body: original.body,\n    subject: original.subject,\n    to: original.to\n  },\n  binary: {}\n};\n\nlet count = 0;\n\nfor (const item of inputItems) {\n  if (item.binary) {\n    for (const key of Object.keys(item.binary)) {\n      count++;\n      output.binary[`attachment_${count}`] = item.binary[key];\n    }\n  }\n\n  if (Array.isArray(item.json?.data)) {\n    for (const record of item.json.data) {\n      if (record.binary) {\n        for (const key of Object.keys(record.binary)) {\n          count++;\n          output.binary[`attachment_${count}`] = record.binary[key];\n        }\n      }\n    }\n  }\n}\n\nif (count === 0) {\n  throw new Error(\"No binary attachments found after Aggregate node.\");\n}\n\nreturn [output];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        0
+      ],
+      "id": "94225791-51e4-4f6d-98ab-70e3f323f272",
+      "name": "Collect Attachments"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {
+          "includeBinaries": true
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        784,
+        0
+      ],
+      "id": "c4f455a8-df47-4eeb-8ed6-8ceb8cedd586",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\n\nitem.json.body = (item.json.body || '').replace(/\\s+$/, '') + `\n\n<br><br>\n\n<div style=\"font-family:Calibri, Arial, sans-serif;\nfont-size:11pt;\ncolor:#333333;\nline-height:1.45;\">\n\n<strong>ABC Industrial Solutions</strong><br>\nAutomation & Document Services Team\n\n<br><br>\n\n<a href=\"https://www.company.com\"\nstyle=\"color:#0563C1;text-decoration:underline;\">\nwww.company.com\n</a>\n\n<br><br>\n\n<span style=\"font-size:10pt;color:#555555;\">\nAI Automation | Document Retrieval | Workflow Integration\n</span>\n\n</div>\n\n`;\n\nreturn [item];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        0
+      ],
+      "id": "c0b9e2aa-9917-4247-af3e-7d22fe922324",
+      "name": "Prepare Email Content"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $json.message_id }}",
+        "message": "={{ $json.body }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "={{ Object.keys($binary).join(',') }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "c02e9f90-15bb-4f6d-901f-0d57f03614c5",
+      "name": "Send Multi-Attachment Reply",
+      "webhookId": "2b455e83-c11f-467d-9ddb-074dd88486cc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "49C1aXE4uf05iimd",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Split Attachment Names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Attachment Names": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect Attachments": {
+      "main": [
+        [
+          {
+            "node": "Prepare Email Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Collect Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Email Content": {
+      "main": [
+        [
+          {
+            "node": "Send Multi-Attachment Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ba7d5011-5afb-4bcd-9c81-a5641dcebbdd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5a6017d3b9041d068323eb8bae534a4d4cd418d6ec531bdbff3db8df77364291"
+  },
+  "nodeGroups": [],
+  "id": "TjIKNBKriVFAjCj3",
+  "tags": []
+}

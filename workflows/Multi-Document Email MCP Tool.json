@@ -1,0 +1,130 @@
+{
+  "name": "Multi-Document Email MCP Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "e2baee74-e1a2-4794-b8f9-9e4c94681527"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        -16
+      ],
+      "id": "f3cfee18-b8ad-4734-ae62-9c1772d919ab",
+      "name": "MCP Server Trigger",
+      "webhookId": "e2baee74-e1a2-4794-b8f9-9e4c94681527"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "TjIKNBKriVFAjCj3",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/TjIKNBKriVFAjCj3",
+          "cachedResultName": "Document Retrieval & Multi-Attachment Email System"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message_id', ``, 'string') }}",
+            "body": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('body', ``, 'string') }}",
+            "attachment_filenames": "={{ $fromAI('attachment_filenames', 'Pipe-separated PDF filenames from Google Drive, for example: testn8n.pdf|file2.pdf', 'string') }}",
+            "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('subject', ``, 'string') }}",
+            "to": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('to', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message_id",
+              "displayName": "message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "attachment_filenames",
+              "displayName": "attachment_filenames",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "to",
+              "displayName": "to",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        192
+      ],
+      "id": "e81ca7da-58ba-459e-ab99-2cf91e26e56f",
+      "name": "Call 'Document Retrieval & Multi-Attachment Email System'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Call 'Document Retrieval & Multi-Attachment Email System'": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3dfdbde2-dfc2-40e4-99ac-8b37304342bb",
+  "meta": {
+    "instanceId": "5a6017d3b9041d068323eb8bae534a4d4cd418d6ec531bdbff3db8df77364291"
+  },
+  "nodeGroups": [],
+  "id": "bEabMVO4GuzI4d60",
+  "tags": []
+}

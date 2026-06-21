@@ -1,0 +1,131 @@
+{
+  "name": "Single Document Email MCP Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "c96ee52b-475e-4402-90fe-9fb394ca3173"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aa0a72ba-c0a2-42d5-8be6-4b9ea2cf14d0",
+      "name": "MCP Server Trigger",
+      "webhookId": "c96ee52b-475e-4402-90fe-9fb394ca3173"
+    },
+    {
+      "parameters": {
+        "description": "Use this tool to reply to an existing Gmail email thread and attach one or more PDF documents stored in Google Drive.\n\nThe workflow performs the following steps automatically:\n\n1. Searches Google Drive for each requested PDF filename.\n2. Downloads every matching PDF.\n3. Attaches the requested document(s) to the email.\n4. Appends a standard HTML email signature.\n5. Replies to the specified Gmail thread with the attachment(s).\n\n## Required Inputs\n\n### message_id (string)\n\nThe Gmail Message ID of the email being replied to.\n\n### body (string)\n\nThe email body only.\n\nDo NOT include the email signature.\n\nThe workflow automatically appends a standard HTML email signature.\n\n### attachment_filenames (string)\n\nThe exact filename of the PDF document stored in Google Drive.\n\nExamples:\n\nSingle document\n\n```text\nProduct_Brochure.pdf\n```\n\nAnother document\n\n```text\nTechnical_Datasheet.pdf\n```\n\n## Optional Inputs\n\n### to (string)\n\nRecipient email address.\n\nIgnored when replying to an existing Gmail thread but may still be supplied.\n\n### subject (string)\n\nSubject line.\n\nIgnored when replying because Gmail preserves the original thread subject.\n\n## Filename Rules\n\n* Use the exact filename stored in Google Drive.\n* Include the file extension (.pdf).\n* Filenames are case-sensitive where applicable.\n* Each filename should refer to a PDF document.\n\n## Example 1\n\nmessage_id:\n\n```text\n19ed59c0d4798a3a\n```\n\nbody:\n\n```text\nPlease find the requested technical document attached.\n```\n\nattachment_filenames:\n\n```text\nProduct_Brochure.pdf\n```\n\n## Example 2\n\nmessage_id:\n\n```text\n19ed59c0d4798a3a\n```\n\nbody:\n\n```text\nPlease find the requested document attached for your reference.\n```\n\nattachment_filenames:\n\n```text\nTechnical_Datasheet.pdf\n```\n\nDo not ask follow-up questions if all required inputs are available.\n\nReturn an error only if the specified filename cannot be found in Google Drive.\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "ib8fAFd4nK5TFm8R",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ib8fAFd4nK5TFm8R",
+          "cachedResultName": "Single Document Email Automation"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "to": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('to', `The recipient email address.`, 'string') }}",
+            "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('subject', `The subject line of the email.`, 'string') }}",
+            "body": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('body', `The HTML or plain text body of the email.`, 'string') }}",
+            "message_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('message_id', `The Gmail Message ID of the email to reply to. Leave empty only when sending a new email.`, 'string') }}",
+            "attachment_filenames": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('attachment_filenames', `A comma-separated list of PDF filenames exactly as they appear in Google Drive.\n\nExamples:\ntest.pdf\n\nor\n\nbrochure.pdf,tds.pdf`, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "to",
+              "displayName": "to",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "message_id",
+              "displayName": "message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "attachment_filenames",
+              "displayName": "attachment_filenames",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        224
+      ],
+      "id": "1332d562-b135-4f97-bde6-603e45c02dc4",
+      "name": "Call 'Single Document Email Automation'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Call 'Single Document Email Automation'": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "a3c09d97-82c6-499d-ac02-94ce15f60dad",
+  "meta": {
+    "instanceId": "5a6017d3b9041d068323eb8bae534a4d4cd418d6ec531bdbff3db8df77364291"
+  },
+  "nodeGroups": [],
+  "id": "PF9v47t9fJbheZvp",
+  "tags": []
+}

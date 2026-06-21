@@ -1,0 +1,221 @@
+{
+  "name": "Single Document Email Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "to"
+            },
+            {
+              "name": "subject"
+            },
+            {
+              "name": "body"
+            },
+            {
+              "name": "message_id"
+            },
+            {
+              "name": "attachment_filenames"
+            }
+          ]
+        }
+      },
+      "id": "069a233a-8e55-4752-ad34-6182c1168bad",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $('When Executed by Another Workflow').item.json.attachment_filenames }}",
+        "limit": 1,
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        240,
+        0
+      ],
+      "id": "4b46d4d9-8ea3-4786-a608-b3a4c8a2d0ab",
+      "name": "Search Document",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "HWKDMnekN2NCGTGI",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        480,
+        0
+      ],
+      "id": "5df65e67-f110-438f-868c-c0a46d22922b",
+      "name": "Retrieve Document",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "HWKDMnekN2NCGTGI",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4489e868-65c4-4ec3-9f13-17c47a7e5d88",
+              "name": "body",
+              "value": "={{\n(($('When Executed by Another Workflow').item.json.body ?? '')).replace(/\\s+$/, '') + `\n\n<br><br>\n\n<div style=\"font-family:Calibri, Arial, sans-serif;\nfont-size:11pt;\ncolor:#333333;\nline-height:1.45;\">\n\n<strong>ABC Industrial Solutions</strong><br>\nAutomation & Document Services Team\n\n<br><br>\n\n<a href=\"https://www.company.com\"\nstyle=\"color:#0563C1;text-decoration:underline;\">\nwww.company.com\n</a>\n\n<br><br>\n\n<span style=\"font-size:10pt;color:#555555;\">\nAI Automation | Document Retrieval | Workflow Integration\n</span>\n\n</div>\n\n`\n}}",
+              "type": "string"
+            },
+            {
+              "id": "142881b7-003e-4018-a3ee-cf20fab5adf7",
+              "name": "message_id",
+              "value": "={{ $('When Executed by Another Workflow').item.json.message_id }}",
+              "type": "string"
+            },
+            {
+              "id": "40d99d31-2729-4578-8a5f-cd5312d1cff1",
+              "name": "to",
+              "value": "={{ $('When Executed by Another Workflow').item.json.to }}",
+              "type": "string"
+            },
+            {
+              "id": "fdad663a-1c10-4797-8970-188057da20ad",
+              "name": "subject",
+              "value": "={{ $('When Executed by Another Workflow').item.json.subject }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {
+          "stripBinary": false
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        704,
+        0
+      ],
+      "id": "c4c99e3a-04be-4c21-a900-e204f6739680",
+      "name": "Prepare Email Content"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('When Executed by Another Workflow').item.json.message_id }}",
+        "message": "={{ $json.body }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        0
+      ],
+      "id": "31594cf5-d3b5-4b01-bd40-d41a23ae7a24",
+      "name": "Send Document Reply",
+      "webhookId": "620c4c34-c956-4c0e-af38-823a7be5b0c0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "49C1aXE4uf05iimd",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Search Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Document": {
+      "main": [
+        [
+          {
+            "node": "Retrieve Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Document": {
+      "main": [
+        [
+          {
+            "node": "Prepare Email Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Email Content": {
+      "main": [
+        [
+          {
+            "node": "Send Document Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b5f4b72a-b98d-45ff-9904-8d3eb25eb3fc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5a6017d3b9041d068323eb8bae534a4d4cd418d6ec531bdbff3db8df77364291"
+  },
+  "nodeGroups": [],
+  "id": "ib8fAFd4nK5TFm8R",
+  "tags": []
+}
