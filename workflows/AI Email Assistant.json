@@ -1,0 +1,117 @@
+{
+  "name": "AI Email Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "fed1a0b0-ab70-4e04-b13a-67e703cb2d60"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        112,
+        -48
+      ],
+      "id": "dbdb012f-ce2b-4bad-a2c5-7b2e9708f6e0",
+      "name": "MCP Server Trigger",
+      "webhookId": "fed1a0b0-ab70-4e04-b13a-67e703cb2d60"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Send a message in Gmail.\nRequires recipient email, subject, and message body.",
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{\n$fromAI('Message', '', 'string').replace(/\\s+$/,'') + `\n\n<br><br>\n\n<div style=\"font-family:Calibri, Arial, sans-serif;\nfont-size:11pt;\ncolor:#333333;\nline-height:1.45;\">\n\n<strong>ABC Industrial Solutions</strong><br>\n\nBusiness Process Automation Team\n\n<br><br>\n\n<a href=\"https://www.company.com\"\nstyle=\"color:#0563C1;text-decoration:underline;\">\nwww.company.com\n</a>\n\n<br><br>\n\n<span style=\"font-size:10pt;color:#555555;\">\nAI Automation | Workflow Integration | Document Management\n</span>\n\n</div>\n\n`\n}}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": []
+          },
+          "ccList": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('CC', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        288
+      ],
+      "id": "045271f8-e2b0-48af-a797-1016880fa5dc",
+      "name": "Send Email",
+      "webhookId": "a9bfe809-370c-4b41-b78f-2cc6c001943f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "49C1aXE4uf05iimd",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Reply to an existing Gmail message.\nRequires the Gmail message ID and reply body.",
+        "operation": "reply",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false,
+          "ccList": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('CC', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        288
+      ],
+      "id": "4b16ed6f-b17b-40f5-8163-3385ad639845",
+      "name": "Reply Email",
+      "webhookId": "15ba8575-b70d-4d59-9906-125547f60604",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "49C1aXE4uf05iimd",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Send Email": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply Email": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "2230af52-48b5-48fe-bc80-04fdbcbf78ad",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5a6017d3b9041d068323eb8bae534a4d4cd418d6ec531bdbff3db8df77364291"
+  },
+  "nodeGroups": [],
+  "id": "GQUohF6sp47EU0Bd",
+  "tags": []
+}
